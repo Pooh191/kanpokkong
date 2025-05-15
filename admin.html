@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการลงทะเบียนที่ดิน - แอดมิน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>ระบบจัดการลงทะเบียนที่ดิน</h1>
+            <p>ส่วนผู้ดูแลระบบ</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="login-section" class="admin-section">
+            <h2>เข้าสู่ระบบผู้ดูแล</h2>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label for="admin-username">ชื่อผู้ใช้:</label>
+                    <input type="text" id="admin-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">รหัสผ่าน:</label>
+                    <input type="password" id="admin-password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="login-btn">เข้าสู่ระบบ</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="admin-dashboard" class="admin-section" style="display: none;">
+            <h2>แผงควบคุมผู้ดูแล</h2>
+            
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="registrations-tab">การจองที่ดิน</button>
+                <button class="tab-btn" data-tab="land-management-tab">จัดการที่ดิน</button>
+                <button class="tab-btn" data-tab="person-management-tab">จัดการบุคคล</button>
+                <button class="tab-btn" data-tab="system-settings-tab">การตั้งค่าระบบ</button>
+                <button id="logout-btn" class="logout-btn">ออกจากระบบ</button>
+            </div>
+            
+            <div id="registrations-tab" class="tab-content active">
+                <h3>จัดการการจองที่ดิน</h3>
+                <div class="admin-actions">
+                    <button id="refresh-registrations-btn">รีเฟรชข้อมูล</button>
+                    <button id="export-registrations-btn">ส่งออกข้อมูล</button>
+                </div>
+                <table id="admin-registrations-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>อำเภอ</th>
+                            <th>จังหวัด</th>
+                            <th>ตำบล</th>
+                            <th>แปลงที่ดิน</th>
+                            <th>สถานะ</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ข้อมูลจะถูกเพิ่มโดย JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="land-management-tab" class="tab-content">
+                <h3>จัดการสถานะที่ดิน</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="land-district-select">อำเภอ:</label>
+                        <select id="land-district-select">
+                            <option value="">-- เลือกอำเภอ --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="land-subdistrict-select">ตำบล:</label>
+                        <select id="land-subdistrict-select" disabled>
+                            <option value="">-- เลือกตำบล --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="land-plot-select">แปลงที่ดิน:</label>
+                        <select id="land-plot-select" disabled>
+                            <option value="">-- เลือกแปลง --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>สถานะปัจจุบัน:</label>
+                        <input type="text" id="current-land-status" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-land-status">เปลี่ยนสถานะเป็น:</label>
+                        <select id="new-land-status">
+                            <option value="available">ว่าง</option>
+                            <option value="reserved">ถูกจอง</option>
+                            <option value="suspended">ระงับ</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="admin-actions">
+                    <button id="update-land-status-btn">อัพเดทสถานะ</button>
+                    <button id="bulk-update-btn">อัพเดทหลายแปลง</button>
+                </div>
+            </div>
+            
+            <div id="person-management-tab" class="tab-content">
+                <h3>จัดการข้อมูลบุคคล</h3>
+                <div class="admin-actions">
+                    <button id="add-person-btn">เพิ่มบุคคลใหม่</button>
+                </div>
+                <table id="persons-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>อำเภอ</th>
+                            <th>จังหวัด</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ข้อมูลจะถูกเพิ่มโดย JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div id="add-person-form" style="display: none; margin-top: 20px;">
+                    <h4>เพิ่มบุคคลใหม่</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="new-person-name">ชื่อ-นามสกุล:</label>
+                            <input type="text" id="new-person-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-person-district">อำเภอ:</label>
+                            <input type="text" id="new-person-district" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-person-province">จังหวัด:</label>
+                            <input type="text" id="new-person-province" required>
+                        </div>
+                    </div>
+                    <div class="admin-actions">
+                        <button id="save-person-btn">บันทึก</button>
+                        <button id="cancel-add-person-btn">ยกเลิก</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="system-settings-tab" class="tab-content">
+                <h3>การตั้งค่าระบบ</h3>
+                <div class="form-group">
+                    <label for="registration-status">สถานะการลงทะเบียน:</label>
+                    <select id="registration-status">
+                        <option value="open">เปิด</option>
+                        <option value="closed">ปิด</option>
+                    </select>
+                </div>
+                <div class="admin-actions">
+                    <button id="save-settings-btn">บันทึกการตั้งค่า</button>
+                    <button id="backup-data-btn">สำรองข้อมูล</button>
+                    <button id="restore-data-btn">กู้คืนข้อมูล</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 กระทรวงการปกครอง. สงวนลิขสิทธิ์.</p>
+        </div>
+    </footer>
+
+    <script src="admin.js"></script>
+</body>
+</html>

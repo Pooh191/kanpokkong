@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบลงทะเบียนที่ดิน - กระทรวงการปกครอง</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>ระบบลงทะเบียนที่ดิน</h1>
+            <p>กระทรวงการปกครอง</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="registration-section">
+            <h2>แบบฟอร์มการจองที่ดิน</h2>
+            <form id="land-registration-form">
+                <div class="form-group">
+                    <label for="person-select">เลือกชื่อผู้จอง:</label>
+                    <select id="person-select" required>
+                        <option value="">-- กรุณาเลือกชื่อผู้จอง --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>อำเภอ/เขต:</label>
+                    <input type="text" id="district-display" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>จังหวัด:</label>
+                    <input type="text" id="province-display" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="subdistrict-select">เลือกตำบล/แขวง:</label>
+                    <select id="subdistrict-select" required disabled>
+                        <option value="">-- กรุณาเลือกตำบล/แขวง --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="plot-select">เลือกแปลงที่ดิน:</label>
+                    <select id="plot-select" required disabled>
+                        <option value="">-- กรุณาเลือกแปลงที่ดิน --</option>
+                    </select>
+                    <div id="plot-status"></div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" id="submit-btn">ยืนยันการจอง</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="registration-list">
+            <h2>รายชื่อผู้จองที่ดิน</h2>
+            <table id="registrations-table">
+                <thead>
+                    <tr>
+                        <th>ลำดับ</th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>อำเภอ</th>
+                        <th>จังหวัด</th>
+                        <th>ตำบล/แขวง</th>
+                        <th>แปลงที่ดิน</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ข้อมูลจะถูกเพิ่มโดย JavaScript -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 กระทรวงการปกครอง. สงวนลิขสิทธิ์.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
