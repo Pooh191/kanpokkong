@@ -72,34 +72,45 @@ const initialData = {
     landStatus: {}
 };
 
+// กำหนด URL ของ Web App จาก Google Apps Script
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyLrbeLnjU2BSog5o7tGAYNPRO18JvtKQy2oUZZNHFRURCw4ZmcGYu7t5V9UFuu7Y9W/exec'; // ⚠️ แทนที่ด้วย URL จริงของคุณ
+
+// ข้อมูลแอปจะถูกเก็บใน window.appData
+window.appData = {
+    persons: [],
+    subdistricts: {},
+    registrations: [],
+    landStatus: {}
+};
+
 // Initialize the application
 function init() {
     loadData();
-    populatePersonSelect();
-    renderRegistrationsTable();
     setupEventListeners();
 }
 
-// Load data from localStorage or use initial data
+// Load data from Google Sheets via Google Apps Script
 function loadData() {
-    const savedData = localStorage.getItem('landRegistrationData');
-    if (savedData) {
-        window.appData = JSON.parse(savedData);
-    } else {
-        window.appData = {
-            persons: initialData.persons,
-            subdistricts: initialData.subdistricts,
-            registrations: initialData.registrations,
-            landStatus: initializeLandStatus()
-        };
-    }
+    fetch(`${GAS_URL}?action=loadData`)
+        .then(res => res.json())
+        .then(data => {
+            window.appData = {
+                persons: data.persons,
+                subdistricts: data.subdistricts,
+                registrations: data.registrations,
+                landStatus: initializeLandStatus()
+            };
+            updateLandStatusFromRegistrations();
+            populatePersonSelect();
+            renderRegistrationsTable();
+        });
 }
 
 // Initialize land status for all plots
 function initializeLandStatus() {
     const status = {};
-    for (const district in initialData.subdistricts) {
-        for (const subdistrict of initialData.subdistricts[district]) {
+    for (const district in window.appData.subdistricts) {
+        for (const subdistrict of window.appData.subdistricts[district]) {
             status[`${district}-${subdistrict}`] = {
                 plots: Array(8).fill('available')
             };
@@ -108,9 +119,15 @@ function initializeLandStatus() {
     return status;
 }
 
-// Save data to localStorage
-function saveData() {
-    localStorage.setItem('landRegistrationData', JSON.stringify(window.appData));
+// Update landStatus based on existing registrations
+function updateLandStatusFromRegistrations() {
+    for (const reg of window.appData.registrations) {
+        const key = `${reg.district}-${reg.subdistrict}`;
+        const plotIndex = reg.plot.charCodeAt(0) - 65;
+        if (window.appData.landStatus[key]) {
+            window.appData.landStatus[key].plots[plotIndex] = 'reserved';
+        }
+    }
 }
 
 // Populate person select dropdown
@@ -237,16 +254,16 @@ function registerLand() {
         return;
     }
 
-    const alreadyRegistered = window.appData.registrations.some(reg => reg.personId === personId);
+    const alreadyRegistered = window.appData.registrations.some(reg => reg.personId == personId);
     if (alreadyRegistered) {
-        alert('บุคคลนี้ได้ทำการจองที่ดินไว้แล้ว (1 คนจองได้เพียง 1 แปลงเท่านั้น)');
+        alert('บุคคลนี้ได้ทำการจองที่ดินไว้แล้ว (1 คนสามารถจองได้ 1 แปลงเท่านั้น)');
         return;
     }
 
     const key = `${district}-${subdistrict}`;
     const plotIndex = plot.charCodeAt(0) - 65;
 
-    if (window.appData.landStatus[key].plots[plotIndex] !== 'available') {
+    if (window.appData.landStatus[key]?.plots[plotIndex] !== 'available') {
         alert('แปลงที่ดินนี้ไม่สามารถจองได้ในขณะนี้');
         return;
     }
@@ -263,17 +280,20 @@ function registerLand() {
         registrationDate: new Date().toISOString()
     };
 
-    window.appData.registrations.push(registration);
-    window.appData.landStatus[key].plots[plotIndex] = 'reserved';
-
-    saveData();
-    renderRegistrationsTable();
-
-    registrationForm.reset();
-    subdistrictSelect.disabled = true;
-    plotSelect.disabled = true;
-    plotStatus.textContent = '';
-    alert('การจองที่ดินเสร็จสมบูรณ์');
+    // ส่งไปเซิร์ฟเวอร์
+    fetch(`${GAS_URL}?action=saveRegistration`, {
+        method: 'POST',
+        body: new URLSearchParams({
+            data: JSON.stringify(registration)
+        })
+    }).then(() => {
+        alert('การจองที่ดินเสร็จสมบูรณ์');
+        loadData(); // Reload ข้อมูลใหม่จากเซิร์ฟเวอร์
+        registrationForm.reset();
+        subdistrictSelect.disabled = true;
+        plotSelect.disabled = true;
+        plotStatus.textContent = '';
+    });
 }
 
 // Render registrations table
